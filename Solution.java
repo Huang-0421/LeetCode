@@ -15,7 +15,7 @@ public class Solution {
             else
                 j = avg - 1;
         }
-        return -1;
+        return 0;
     }
 }
 
