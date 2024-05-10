@@ -1,5 +1,5 @@
 package LeetCode;
-
+//二分查找
 public class Solution {
     public int search(int[] nums, int target) {
         int i = 0;
