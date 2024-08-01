@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 //二分查找  https://leetcode.cn/problems/binary-search/
 @SuppressWarnings("all")
 public class Solution {
@@ -93,10 +95,10 @@ public class Solution {
 @SuppressWarnings("all")
 class Solution_2 {
     /**
-    *   @define x往前找，k始终在最后一个不同数字
-    *   @param [nums, val]
-    *   @return int
-    */
+     * @param [nums, val]
+     * @return int
+     * @define x往前找，k始终在最后一个不同数字
+     */
     public static int removeElement(int[] nums, int val) {
         int x = 0; // 用于遍历数组
         int k = 0; // 记录非 val 元素的数量
@@ -110,8 +112,9 @@ class Solution_2 {
         }
         return k;
     }
+
     public static void main(String[] args) {
-        int[] nums = {0,1,2,2,3,0,4,2};
+        int[] nums = {0, 1, 2, 2, 3, 0, 4, 2};
         int val = 2;
         int k = Solution_2.removeElement(nums, val);
         System.out.println(k);
@@ -125,46 +128,46 @@ class Solution_2 {
 @SuppressWarnings("all")
 class Solution_3 {
     /**
-    *   @define 找到正负分界线，从小打到排列，类似归并
-    *   @param [nums]
-    *   @return int[]
-    */
+     * @param [nums]
+     * @return int[]
+     * @define 找到正负分界线，从小打到排列，类似归并
+     */
     public static int[] sortedSquares(int[] nums) {
         int[] result = new int[nums.length];
         int i = 0;
         int count = 0;
-        while(i < nums.length && nums[i] < 0)
+        while (i < nums.length && nums[i] < 0)
             i++;
         int j = i - 1;
-        while(j >= 0 && i < nums.length){
-            if((-nums[j]) < nums[i]){
+        while (j >= 0 && i < nums.length) {
+            if ((-nums[j]) < nums[i]) {
                 result[count] = nums[j] * nums[j];
                 count++;
                 j--;
-            }
-            else {
+            } else {
                 result[count] = nums[i] * nums[i];
                 count++;
                 i++;
             }
         }
-        while(j >= 0){
+        while (j >= 0) {
             result[count] = nums[j] * nums[j];
             count++;
             j--;
         }
-        while(i < nums.length){
+        while (i < nums.length) {
             result[count] = nums[i] * nums[i];
             count++;
             i++;
         }
         return result;
     }
+
     /**
-    *   @define 与其去找中间的分界，不如从两端最大的开始，反着插入result
-    *   @param [nums]
-    *   @return int[]
-    */
+     * @param [nums]
+     * @return int[]
+     * @define 与其去找中间的分界，不如从两端最大的开始，反着插入result
+     */
     public int[] sortedSquares_02(int[] nums) {
         int right = nums.length - 1;
         int left = 0;
@@ -184,10 +187,106 @@ class Solution_3 {
     }
 
     public static void main(String[] args) {
-        int[] nums = {-4,-1,0,3,10};
+        int[] nums = {-4, -1, 0, 3, 10};
         int[] nums1 = Solution_3.sortedSquares(nums);
         for (int i = 0; i < nums1.length; i++) {
             System.out.println(nums1[i]);
         }
+    }
+}
+
+//长度最小的子数组  https://leetcode.cn/problems/minimum-size-subarray-sum/description/
+//超时算法
+@SuppressWarnings("all")
+class Solution_4_1 {
+    public int minSubArrayLen(int target, int[] nums) {
+        int length = nums.length;
+        int left = 0;
+        int right = length - 1;
+        return findCount(nums, left, right, target, 0);
+    }
+    //  target = 7, nums = [2,3,1,2,4,3]
+    public int findCount(int[] nums, int left, int right, int target,int count_now) {
+        if (left > right) {
+            return count_now;
+        }
+        int sum = getSum(nums, left, right);
+        if (sum >= target) {
+            count_now = right - left + 1;
+            int leftcount = findCount(nums, left, right - 1, target, count_now);
+            int rightcount = findCount(nums, left + 1, right, target, count_now);
+            if (leftcount < rightcount)
+                return leftcount;
+            else
+                return rightcount;
+        }
+        else {
+            return count_now;
+        }
+    }
+    public int getSum(int[] nums, int left, int right) {
+        int sum = 0;
+        for (int i = left; i <= right; i++) {
+            sum += nums[i];
+        }
+        return sum;
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {1,4,4};
+        int target = 4;
+        Solution_4_1 obj = new Solution_4_1();
+        System.out.print(obj.minSubArrayLen(target,nums));
+    }
+}
+//滑动窗口 O(n)
+@SuppressWarnings("all")
+class Solution_4_2 {
+    //  target = 7, nums = [2,3,1,2,4,3]
+    public int minSubArrayLen(int target, int[] nums) {
+        int length = nums.length;
+        int sum = 0;
+        int j = 0;
+        int result = length + 1;
+        for (int i = 0; i < length; i++) {
+            sum += nums[i];
+            while (sum >= target) {
+                result = i - j + 1 < result ? i - j + 1 : result;
+                sum -= nums[j];
+                j++;
+            }
+        }
+        return result > length ? 0 : result;
+    }
+    public static void main(String[] args) {
+        int[] nums = {2,3,1,2,4,3};
+        int target = 7;
+        Solution_4_2 obj = new Solution_4_2();
+        System.out.print(obj.minSubArrayLen(target,nums));
+    }
+}
+//构造前缀和数组 + 二分查找
+@SuppressWarnings("all")
+class Solution_4_3 {
+    public int minSubArrayLen(int target, int[] nums) {
+        int length = nums.length;
+        int result = Integer.MAX_VALUE;
+        int[] sums = new int[length + 1];
+        sums[0] = 0;
+        for (int i = 1; i < length + 1; i++) {
+            sums[i] = sums[i - 1] + nums[i - 1];
+        }
+        for (int i = 1; i < length + 1; i++) {
+            int s = sums[i - 1] + target;
+            int bound = Arrays.binarySearch(sums,s);
+            if(bound < 0){
+                bound = - bound - 1;
+            }
+            if(bound > length){
+                break;
+            }
+            result = bound - i + 1 < result ? bound - i + 1 : result;
+        }
+        return result == Integer.MAX_VALUE ? 0 : result;
     }
 }
