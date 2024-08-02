@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.Scanner;
 
 //二分查找  https://leetcode.cn/problems/binary-search/
 @SuppressWarnings("all")
@@ -205,8 +206,9 @@ class Solution_4_1 {
         int right = length - 1;
         return findCount(nums, left, right, target, 0);
     }
+
     //  target = 7, nums = [2,3,1,2,4,3]
-    public int findCount(int[] nums, int left, int right, int target,int count_now) {
+    public int findCount(int[] nums, int left, int right, int target, int count_now) {
         if (left > right) {
             return count_now;
         }
@@ -219,11 +221,11 @@ class Solution_4_1 {
                 return leftcount;
             else
                 return rightcount;
-        }
-        else {
+        } else {
             return count_now;
         }
     }
+
     public int getSum(int[] nums, int left, int right) {
         int sum = 0;
         for (int i = left; i <= right; i++) {
@@ -233,12 +235,13 @@ class Solution_4_1 {
     }
 
     public static void main(String[] args) {
-        int[] nums = {1,4,4};
+        int[] nums = {1, 4, 4};
         int target = 4;
         Solution_4_1 obj = new Solution_4_1();
-        System.out.print(obj.minSubArrayLen(target,nums));
+        System.out.print(obj.minSubArrayLen(target, nums));
     }
 }
+
 //滑动窗口 O(n)
 @SuppressWarnings("all")
 class Solution_4_2 {
@@ -258,13 +261,15 @@ class Solution_4_2 {
         }
         return result > length ? 0 : result;
     }
+
     public static void main(String[] args) {
-        int[] nums = {2,3,1,2,4,3};
+        int[] nums = {2, 3, 1, 2, 4, 3};
         int target = 7;
         Solution_4_2 obj = new Solution_4_2();
-        System.out.print(obj.minSubArrayLen(target,nums));
+        System.out.print(obj.minSubArrayLen(target, nums));
     }
 }
+
 //构造前缀和数组 + 二分查找
 @SuppressWarnings("all")
 class Solution_4_3 {
@@ -278,15 +283,124 @@ class Solution_4_3 {
         }
         for (int i = 1; i < length + 1; i++) {
             int s = sums[i - 1] + target;
-            int bound = Arrays.binarySearch(sums,s);
-            if(bound < 0){
-                bound = - bound - 1;
+            int bound = Arrays.binarySearch(sums, s);
+            if (bound < 0) {
+                bound = -bound - 1;
             }
-            if(bound > length){
+            if (bound > length) {
                 break;
             }
             result = bound - i + 1 < result ? bound - i + 1 : result;
         }
         return result == Integer.MAX_VALUE ? 0 : result;
+    }
+}
+
+//螺旋矩阵  https://leetcode.cn/problems/spiral-matrix-ii/
+@SuppressWarnings("all")
+class Solution_5 {
+    public int[][] generateMatrix(int n) {
+        int[][] result = new int[n][n];
+        int value = 1;
+        int count = n - 1;
+        int direct = 0; //下左为 0，上右为 1
+        int i = 0, j = 0;
+        //处理第一排
+        for (; j < n; j++) {
+            result[0][j] = value++;
+        }
+        j--;
+        //开始螺旋  i = 0; j = n - 1;
+        while (count > 0) {
+            if (direct == 0) {
+                //往下填充
+                for (int k = 0; k < count; k++) {
+                    result[++i][j] = value++;
+                }
+                //往左填充
+                for (int k = 0; k < count; k++) {
+                    result[i][--j] = value++;
+                }
+            }
+            if (direct == 1) {
+                //往上填充
+                for (int k = 0; k < count; k++) {
+                    result[--i][j] = value++;
+                }
+                //往右填充
+                for (int k = 0; k < count; k++) {
+                    result[i][++j] = value++;
+                }
+            }
+            count--;
+            direct = direct == 0 ? 1 : 0;
+        }
+        return result;
+    }
+
+    public static void main(String[] args) {
+        Solution_5 solution = new Solution_5();
+        int[][] x = solution.generateMatrix(4);
+    }
+}
+
+//区间和   https://kamacoder.com/problempage.php?pid=1070
+@SuppressWarnings("all")
+class Solution_6 {
+    public static void main(String[] args) {
+        Scanner scan = new Scanner(System.in);
+        int n = scan.nextInt();
+        int[] nums = new int[n + 1];
+        nums[0] = 0;
+        for (int i = 1; i <= n; i++) {
+            nums[i] = scan.nextInt() + nums[i - 1];
+        }
+        while (scan.hasNext()) {
+            int a = scan.nextInt();
+            int b = scan.nextInt();
+            System.out.println(nums[b + 1] - nums[a]);
+        }
+    }
+}
+
+//开发商购买土地   https://kamacoder.com/problempage.php?pid=1044
+@SuppressWarnings("all")
+class Solution_7 {
+    public static void main(String[] args) {
+        Scanner scan = new Scanner(System.in);
+        int n = scan.nextInt();
+        int m = scan.nextInt();
+        int count = 0;
+        int[] row = new int[n];
+        int[] column = new int[m];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                int x = scan.nextInt();
+                count += x;
+                row[i] += x;
+                column[j] += x;
+            }
+        }
+        //for row
+        int result_row = Integer.MAX_VALUE;
+        int left = 0;
+        int right = 0;
+        for (int i = 0; i < n - 1; i++) {
+            left += row[i];
+            right = count - left;
+            int differ = Math.abs(right - left);
+            result_row = differ < result_row ? differ : result_row;
+        }
+        //for column
+        int result_column = Integer.MAX_VALUE;
+        left = 0;
+        right = 0;
+        for (int i = 0; i < m - 1; i++) {
+            left += column[i];
+            right = count - left;
+            int differ = Math.abs(right - left);
+            result_column = differ < result_column? differ : result_column;
+        }
+        System.out.print(result_row<result_column?result_row:result_column);
     }
 }
