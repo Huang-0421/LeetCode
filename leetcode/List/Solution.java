@@ -1,7 +1,4 @@
 package List;
-
-import java.util.List;
-
 /**
  * @author Huang_ruijie
  * @version 1.0
@@ -132,5 +129,124 @@ class Solution_3 {
         listNode.next.next = new ListNode(3);
         listNode.next.next.next = new ListNode(4);
         ListNode node = swapPairs_02(listNode);
+    }
+}
+
+// 删除链表倒数第n个节点  https://leetcode.cn/problems/remove-nth-node-from-end-of-list/description/
+@SuppressWarnings("all")
+class Solution_4{
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        ListNode dummy = new ListNode();
+        dummy.next = head;
+        ListNode prev = dummy;
+        while(n != 1){
+            head= head.next;
+            n--;
+        }
+        while(head.next != null){
+            head = head.next;
+            prev = prev.next;
+        }
+        prev.next = prev.next.next;
+        return dummy.next;
+    }
+}
+
+@SuppressWarnings("all")
+class Solution_5{
+    public static ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        if (headA == null || headB == null){
+            return null;
+        }
+        ListNode newHeadA = headA;
+        ListNode newHeadB = headB;
+        while(headA.next != null && headB.next != null){
+            headA = headA.next;
+            headB = headB.next;
+        }
+        int count = 0;
+        boolean sign = true;//true 代表A长
+        while(headA.next != null){
+            headA = headA.next;
+            count++;
+            sign = true;
+        }
+        while(headB.next != null){
+            headB = headB.next;
+            count++;
+            sign = false;
+        }
+        if(sign){
+            while(count > 0){
+                newHeadA = newHeadA.next;
+                count--;
+            }
+        }
+        else{
+            while(count > 0){
+                newHeadB = newHeadB.next;
+                count--;
+            }
+        }
+        while(newHeadA != newHeadB){
+            newHeadA = newHeadA.next;
+            newHeadB = newHeadB.next;
+        }
+        return newHeadA;
+    }
+
+    public static void main(String[] args) {
+        ListNode headA = new ListNode(4);
+        ListNode A1 = new ListNode(1);
+        headA.next = A1;
+        ListNode A2 = new ListNode(8);
+        A1.next = A2;
+        ListNode A3 = new ListNode(4);
+        A2.next = A3;
+        ListNode A4 = new ListNode(5);
+        A3.next = A4;
+        ListNode headB = new ListNode(5);
+        ListNode B1 = new ListNode(0);
+        headB.next = B1;
+        ListNode B2 = new ListNode(1);
+        B1.next = B2;
+        B2.next = A2;
+        getIntersectionNode(headA,headB);
+    }
+}
+
+// 环形链表 https://leetcode.cn/problems/linked-list-cycle-ii/
+@SuppressWarnings("all")
+class Solution_6{
+    public static ListNode detectCycle(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head;
+        if(head == null)
+            return null;
+        while(fast.next != null && fast.next.next != null){
+            fast = fast.next.next;
+            slow = slow.next;
+            if(slow == fast)
+                break;
+        }
+        if(fast.next == null || fast.next.next == null){
+            return null;
+        }
+        ListNode slow1 = head;
+        while(fast != slow1){
+            fast = fast.next;
+            slow1 = slow1.next;
+        }
+        return slow1;
+    }
+
+    public static void main(String[] args) {
+        ListNode head = new ListNode(3);
+        ListNode h1 = new ListNode(2);
+        head.next = h1;
+        h1.next = new ListNode(0);
+        h1.next.next = new ListNode(-4);
+        h1.next.next.next = h1;
+        detectCycle(head);
     }
 }
